@@ -13,6 +13,8 @@ class Arin {
 			int []a = new int[10];
 			a[11]=10;
 
+			///Am schimbat asta
+
 	}
 
 }
