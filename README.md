@@ -1,0 +1,2 @@
+# Invataceii
+Basic scripts
