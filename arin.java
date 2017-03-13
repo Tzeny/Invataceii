@@ -11,7 +11,7 @@ class Arin {
 	public static void main(String[] args) {
 
 			int []a = new int[10];
-			a[11]=10;
+			a[1] = 0;
 
 			///Am schimbat asta
 
