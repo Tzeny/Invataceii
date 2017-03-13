@@ -5,7 +5,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-class Rest {
+public class restApiExample {
 
 	// http://localhost:8080/RESTfulExample/json/product/get
 	public static void main(String[] args) {
