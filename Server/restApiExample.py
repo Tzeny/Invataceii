@@ -14,7 +14,7 @@ def index():
 
 @app.route('/GetSensorValue')
 def readSensor():
-    data = {"value":random.randrange(200,10000)}
+    data = {"value":str(random.randrange(200,10000))}
     return json.dumps(data)
 
 if __name__ == '__main__':
