@@ -17,5 +17,10 @@ def readSensor():
     data = {"value":str(random.randrange(200,10000))}
     return json.dumps(data)
 
+@app.route('/GetOtherSensor')
+def readOtherSensor():
+    data = {"value2":str(random.randrange(200,10000))}
+    return json.dumps(data)
+
 if __name__ == '__main__':
     app.run(host,port)
