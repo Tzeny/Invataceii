@@ -55,12 +55,11 @@ class restApiExample {
 			
 	}
 	
-	private JSONObject getData(String in)
-	{
-		JSONObject obj = new JSONObject("{}");
+	public int getSensor() {
+
 		try
 		{
-			this.get(in);
+			this.get("GetSensorValue");
 
 			BufferedReader br = new BufferedReader(new InputStreamReader(
 				(conn.getInputStream()))
@@ -69,33 +68,56 @@ class restApiExample {
 			//System.out.println("Output from Server .... \n");
 			int a=-1;
 			while ((output = br.readLine()) != null) {
-				obj = new JSONObject(output);
-				return obj;
+				JSONObject obj = new JSONObject(output);
+				//System.out.println(obj.getString("value"));
+				a = Integer.parseInt(obj.getString("value"));
 			}
 
 			disconnect();
+
+			return a;
 		}
 		catch(IOException e)
 		{
 			System.out.println("Error while reading from server");
 			e.printStackTrace();
+			return -1;
 		}
-		
-		return obj;
-	}
-	
-	public int getSensor() {
-		return Integer.parseInt(getData("GetSensorValue").getString("value"));
 	}
 	public int getOtherSensor() {
-		return Integer.parseInt(getData("GetOtherSensor").getString("value2"));
+		try {
+		
+			this.get("GetOtherSensor");	
+			BufferedReader br = new BufferedReader(new InputStreamReader(
+				(conn.getInputStream()))
+			);
+			
+			String output;
+			//System.out.println("Output from Server .... \n");
+
+			int a=-1;
+			while ((output = br.readLine()) != null) {
+				JSONObject obj = new JSONObject(output);
+				//System.out.println(obj.getString("value"));
+				a = Integer.parseInt(obj.getString("value2"));
+			}
+
+			disconnect();
+
+			return a;
+		}
+		catch(IOException e)
+		{
+			System.out.println("Error while reading from server");
+			e.printStackTrace();
+			return -1;
+		}
 	}
 
 
 	public static void main(String[] args) {
 		restApiExample teni = new restApiExample("127.0.0.1", "1337");
 		System.out.println(teni.getSensor());
-		System.out.println();
 		System.out.println(teni.getSensor());
 		System.out.println(teni.getSensor());
 		
@@ -104,3 +126,18 @@ class restApiExample {
 
 }
 
+/*try
+			{
+				connect("GetOtherSensor");
+			}
+			catch(MalformedURLException e)
+			{
+				System.out.println("Could not connect to server");
+				e.printStackTrace();
+			}
+			catch(IOException e)
+			{
+				System.out.println("Can't open data stream to server");
+				e.printStackTrace();
+			}
+*/
