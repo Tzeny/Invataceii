@@ -26,7 +26,7 @@ class restApiExample {
 	public void disconnect () {
 		conn.disconnect();
 	}
-		
+
 	public void get (String input/*, HttpURLConnection conn*/) throws IOException {
 		try
 			{
@@ -41,7 +41,6 @@ class restApiExample {
 			{
 				System.out.println("Can't open data stream to server");
 				e.printStackTrace();
-				
 				throw new IOException();
 			}
 			conn.setRequestMethod("GET");
@@ -50,11 +49,11 @@ class restApiExample {
 				throw new RuntimeException("Failed : HTTP error code : "
 						+ conn.getResponseCode());
 			}
-			
-			
-			
+
+
+
 	}
-	
+
 	public int getSensor() {
 
 		try
@@ -84,27 +83,26 @@ class restApiExample {
 			return -1;
 		}
 	}
-	public int getOtherSensor() {
+	
+	public JSONObject getOtherSensor() {
 		try {
-		
-			this.get("GetOtherSensor");	
+
+			this.get("GetOtherSensor");
 			BufferedReader br = new BufferedReader(new InputStreamReader(
 				(conn.getInputStream()))
 			);
-			
+
 			String output;
 			//System.out.println("Output from Server .... \n");
 
 			int a=-1;
-			while ((output = br.readLine()) != null) {
+			output = br.readLine();
 				JSONObject obj = new JSONObject(output);
 				//System.out.println(obj.getString("value"));
-				a = Integer.parseInt(obj.getString("value2"));
-			}
 
 			disconnect();
 
-			return a;
+			return obj;
 		}
 		catch(IOException e)
 		{
@@ -120,24 +118,8 @@ class restApiExample {
 		System.out.println(teni.getSensor());
 		System.out.println(teni.getSensor());
 		System.out.println(teni.getSensor());
-		
+
 		System.out.println(teni.getOtherSensor());
 	}
 
 }
-
-/*try
-			{
-				connect("GetOtherSensor");
-			}
-			catch(MalformedURLException e)
-			{
-				System.out.println("Could not connect to server");
-				e.printStackTrace();
-			}
-			catch(IOException e)
-			{
-				System.out.println("Can't open data stream to server");
-				e.printStackTrace();
-			}
-*/
