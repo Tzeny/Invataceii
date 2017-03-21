@@ -7,7 +7,9 @@ import java.awt.event.ActionListener;
 
 public class GUI extends JFrame {
     static JTextArea message;
-
+    static restApiExample rest;
+    static TextField IPInput;
+    static TextField PortInput;
     private GUI() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setTitle("ClientSide GUI");
@@ -69,10 +71,10 @@ public class GUI extends JFrame {
 
         private Content() {
             setLayout(new FlowLayout());
-            Label IP = new Label("IP:");
-            Label Port = new Label("Port:");
-            TextField IPInput = new TextField("           ");
-            TextField PortInput = new TextField("    ");
+            JLabel IP = new JLabel("IP:");
+            JLabel Port = new JLabel("Port:");
+            IPInput = new TextField("           ");
+            PortInput = new TextField("    ");
             add(IP);
             add(IPInput);
             add(Port);
@@ -83,13 +85,33 @@ public class GUI extends JFrame {
 
     private static class GetDataAction implements ActionListener {
         public void actionPerformed(ActionEvent evt) {
-            message.append("data fetched.\n");
+            try {
+                f();
+            } catch (java.net.ConnectException e) {
+                message.append("Server down.");
+            }
+        }
+
+        private void f() throws java.net.ConnectException {
+            if (rest != null && rest.getSensor() != -1)
+                message.append("data fetched " + rest.getSensor() + "\n");
+            else
+                message.append("Connection not established.");
         }
 
     }
 
     private static class ConnectAction implements ActionListener {
         public void actionPerformed(ActionEvent evt) {
+            try {
+                f();
+            } catch (java.net.ConnectException e) {
+                message.append("Server down.");
+            }
+        }
+
+        public void f() throws java.net.ConnectException {
+            rest = new restApiExample(IPInput.getText().trim(), PortInput.getText().trim());
             message.append("connected successfully!\n");
         }
     }
