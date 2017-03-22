@@ -27,7 +27,7 @@ class restApiExample {
 		conn.disconnect();
 	}
 
-	public void get (String input/*, HttpURLConnection conn*/) throws IOException {
+	public void get (String input) throws IOException {
 		try
 			{
 				connect(input);
@@ -53,52 +53,27 @@ class restApiExample {
 
 
 	}
-
-	public int getSensor() {
-
-		try
-		{
-			this.get("GetSensorValue");
-
-			BufferedReader br = new BufferedReader(new InputStreamReader(
-				(conn.getInputStream()))
-			);
-			String output;
-			//System.out.println("Output from Server .... \n");
-			int a=-1;
-			while ((output = br.readLine()) != null) {
-				JSONObject obj = new JSONObject(output);
-				//System.out.println(obj.getString("value"));
-				a = Integer.parseInt(obj.getString("value"));
-			}
-
-			disconnect();
-
-			return a;
-		}
-		catch(IOException e)
-		{
-			System.out.println("Error while reading from server");
-			e.printStackTrace();
-			return -1;
-		}
+	
+	public int getSensor(){
+		JSONObject r = getIn("GetSensorValue");
+		return Integer.parseInt(r.getString("value"));
+	}
+	public int getOtherSensor(){
+		JSONObject r = getIn("GetOtherSensor");
+		return Integer.parseInt(r.getString("value2"));
 	}
 	
-	public JSONObject getOtherSensor() {
+	public JSONObject getIn(String in) {
 		try {
 
-			this.get("GetOtherSensor");
+			this.get(in);
 			BufferedReader br = new BufferedReader(new InputStreamReader(
 				(conn.getInputStream()))
 			);
 
 			String output;
-			//System.out.println("Output from Server .... \n");
-
-			int a=-1;
 			output = br.readLine();
 				JSONObject obj = new JSONObject(output);
-				//System.out.println(obj.getString("value"));
 
 			disconnect();
 
@@ -108,9 +83,10 @@ class restApiExample {
 		{
 			System.out.println("Error while reading from server");
 			e.printStackTrace();
-			return -1;
+			return null;
 		}
 	}
+
 
 
 	public static void main(String[] args) {
