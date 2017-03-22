@@ -26,9 +26,36 @@ class restApiExample {
 	public void disconnect () {
 		conn.disconnect();
 	}
-
-	public void get (String input) throws IOException {
-		try
+	
+	public int getSensor(){
+		try{
+		JSONObject r = getIn("GetSensorValue");
+		return Integer.parseInt(r.getString("value"));
+		}
+		catch(IOException e)
+		{
+			System.out.println("Error \n");
+			e.printStackTrace();
+			return -1;
+		}
+		
+	}
+	public int getOtherSensor(){
+		try{
+		JSONObject r = getIn("GetOtherSensor");
+		return Integer.parseInt(r.getString("value2"));
+		}
+		catch (IOException e)
+		{
+			System.out.println("Error \n");
+			e.printStackTrace();
+			return -1;
+		}
+		
+	}
+	
+	public JSONObject getIn(String input) throws IOException {
+			try
 			{
 				connect(input);
 			}
@@ -49,24 +76,6 @@ class restApiExample {
 				throw new RuntimeException("Failed : HTTP error code : "
 						+ conn.getResponseCode());
 			}
-
-
-
-	}
-	
-	public int getSensor(){
-		JSONObject r = getIn("GetSensorValue");
-		return Integer.parseInt(r.getString("value"));
-	}
-	public int getOtherSensor(){
-		JSONObject r = getIn("GetOtherSensor");
-		return Integer.parseInt(r.getString("value2"));
-	}
-	
-	public JSONObject getIn(String in) {
-		try {
-
-			this.get(in);
 			BufferedReader br = new BufferedReader(new InputStreamReader(
 				(conn.getInputStream()))
 			);
@@ -78,13 +87,7 @@ class restApiExample {
 			disconnect();
 
 			return obj;
-		}
-		catch(IOException e)
-		{
-			System.out.println("Error while reading from server");
-			e.printStackTrace();
-			return null;
-		}
+		
 	}
 
 
