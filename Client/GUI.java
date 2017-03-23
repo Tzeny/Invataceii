@@ -1,25 +1,35 @@
 
+import info.monitorenter.gui.chart.Chart2D;
+import info.monitorenter.gui.chart.ITrace2D;
+import info.monitorenter.gui.chart.traces.Trace2DLtd;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+
 public class GUI extends JFrame {
-    static JTextArea message;
-    static restApiExample rest;
-    static TextField IPInput;
-    static TextField PortInput;
+    private static JTextArea message;
+    private static restApiExample rest;
+    private static TextField IPInput;
+    private static TextField PortInput;
+    private static JFrame mainWindow;
+    private static boolean isConnected = false;
+    private static Chart2D chart;
+    private static ITrace2D trace;
+
     private GUI() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setContentPane(container());
+        setResizable(false);
         setTitle("ClientSide GUI");
-        setSize(250, 200);
+        setSize(300, 200);
+        setVisible(true);
     }
 
-    public static void main(String[] args) {
-
-        GUI mainWindow = new GUI();
-
+    private static JPanel container(){
         JPanel contentPane = new Content();
         JPanel contentContainer = new JPanel();
 
@@ -27,7 +37,7 @@ public class GUI extends JFrame {
 
         contentContainer.add(contentPane);
 
-        JButton dataButton = new JButton("Get Data");
+        JButton dataButton = new JButton("Start Data");
         JButton connectButton = new JButton("Connect");
 
         JPanel dataButtonPanel = new JPanel();
@@ -60,11 +70,11 @@ public class GUI extends JFrame {
         superContainer.setLayout(new GridLayout(2, 1));
         superContainer.add(contentContainer);
         superContainer.add(textContainer);
+        return superContainer;
+    }
 
-        mainWindow.setContentPane(superContainer);
-        mainWindow.setResizable(false);
-        mainWindow.setVisible(true);
-        mainWindow.repaint();
+    public static void main(String[] args) {
+        mainWindow = new GUI();
     }
 
     private static class Content extends JPanel {
@@ -82,21 +92,54 @@ public class GUI extends JFrame {
 
         }
     }
-
+    private static void  dynamicChart(){
+            double startTime = System.currentTimeMillis();
+            chart= new Chart2D();
+            trace = new Trace2DLtd(200);
+            trace.setColor(Color.RED);
+            chart.addTrace(trace);
+            Timer timer = new Timer(500, new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent actionEvent) {
+                    double point = rest.getSensor();
+                    trace.addPoint((double) System.currentTimeMillis() - startTime, point);
+                }
+            });
+            mainWindow = new JFrame("MinimalDynamicChart");
+            // add the chart to the frame:
+            mainWindow.getContentPane().add(chart);
+            mainWindow.setSize(400,300);
+            // Enable the termination button [cross on the upper right edge]:
+            mainWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            mainWindow.setVisible(true);
+            timer.start();
+        }
     private static class GetDataAction implements ActionListener {
+        static boolean start = false;
         public void actionPerformed(ActionEvent evt) {
             try {
                 f();
-            } catch (java.net.ConnectException e) {
-                message.append("Server down.");
+                if(!start) {
+                    ((JButton)evt.getSource()).setText("Stop Data");
+                    start = !start;
+                    dynamicChart();
+                }
+                else{
+                    ((JButton)evt.getSource()).setText("Start Data");
+                    start = !start;
+                }
+
+            } catch (Exception e) {
+                message.append("Server down.\n");
             }
         }
 
         private void f() throws java.net.ConnectException {
-            if (rest != null && rest.getSensor() != -1)
+            if (rest != null && rest.getSensor() != -1) {
                 message.append("data fetched " + rest.getSensor() + "\n");
+            }
             else
-                message.append("Connection not established.");
+                message.append("Connection not established.\n");
         }
 
     }
@@ -105,14 +148,26 @@ public class GUI extends JFrame {
         public void actionPerformed(ActionEvent evt) {
             try {
                 f();
-            } catch (java.net.ConnectException e) {
-                message.append("Server down.");
+                if(rest.getSensor() != -1) {
+                    message.append("connected successfully!\n");
+                    isConnected = true;
+                }
+                else {
+                    throw new java.net.ConnectException();
+                }
+            } catch (Exception e) {
+                message.append("Server down.\n");
+                isConnected = false;
             }
         }
 
-        public void f() throws java.net.ConnectException {
-            rest = new restApiExample(IPInput.getText().trim(), PortInput.getText().trim());
-            message.append("connected successfully!\n");
+        private void f() {
+            try {
+                rest = new restApiExample(IPInput.getText().trim(), PortInput.getText().trim());
+            }
+            catch(Exception e){
+                message.append("Server down.\n");
+            }
         }
     }
 }
